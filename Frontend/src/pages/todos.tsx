@@ -69,6 +69,7 @@ export default function Todos() {
     });
     setTodos(res.data);
   };
+  
 
   const handleLogout = () => {
     Swal.fire({
@@ -110,7 +111,9 @@ export default function Todos() {
       });
 
       // Filter username "assigner"
-      users = res.data.filter((username: string) => username !== "assigner");
+      users = res.data
+  .map((user: { username: string }) => user.username)
+  .filter((name: string) => name !== "assigner");
     } catch (err) {
       Swal.fire("Gagal", "Gagal mengambil daftar user", "error");
       return;
@@ -184,7 +187,8 @@ export default function Todos() {
       const res = await axios.get("http://localhost:8080/api/users", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      users = res.data.filter((username: string) => username !== "assigner");
+      users = res.data.map((user: { username: string }) => user.username)
+      .filter((username: string) => username !== "assigner");
     } catch (err) {
       Swal.fire("Gagal", "Gagal mengambil daftar user", "error");
       return;
@@ -362,7 +366,9 @@ export default function Todos() {
           </p>
         ) : (
           <ul className="space-y-4">
-            {todos.map((todo: Todo) => (
+            {todos
+  .filter((todo) => role === "assigner" || todo.assign === username)
+  .map((todo: Todo) => (
               <div
                 key={todo.id}
                 className="border p-4 mb-2 rounded-lg flex items-center justify-between"
